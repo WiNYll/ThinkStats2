@@ -13,12 +13,44 @@ import sys
 import nsfg
 import thinkstats2
 
+def ReadFemResp(dct_file='2002FemResp.dct',
+                dat_file='2002FemResp.dat.gz'):
+    dct = thinkstats2.ReadStataDct(dct_file)
+    df=dct.ReadFixedWidth(dat_file, compression='gzip')
+    CleanFemResp(df)
+    return df
 
+def CleanFemResp(df):
+    pass
+
+def CrossValidatePregNum(resp):
+    
+    preg=nsfg.ReadFemPreg()
+    
+    preg_map=nsfg.MakePregMap(preg)
+    
+    for index, pregnum in resp.pregnum.items():
+        caseid=resp.caseid[index]
+        indices=preg_map[caseid]
+        
+        if len(indices)!=pregnum:
+            print(caseid, len(indices), pregnum)
+            return False
+        
+    return True
+    
 def main(script):
     """Tests the functions in this module.
 
     script: string script name
     """
+    
+    resp = ReadFemResp()
+    
+    print(resp.pregnum.value_counts().sort_index())
+    
+    CrossValidatePregNum(resp)
+    
     print('%s: All tests passed.' % script)
 
 
