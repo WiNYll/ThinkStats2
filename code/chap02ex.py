@@ -21,8 +21,10 @@ def Mode(hist):
 
     returns: value from Hist
     """
-    return 0
-
+    parityfreq = [(freq, val) for val, freq in hist.Items()]
+    freqmode, mode = max(parityfreq)
+    
+    return mode
 
 def AllModes(hist):
     """Returns value-freq pairs in decreasing order of frequency.
@@ -31,14 +33,38 @@ def AllModes(hist):
 
     returns: iterator of value-freq pairs
     """
-    return []
+    
+    return sorted(hist.Items(), key=itemgetter(1), reverse=True)
 
+def CompareWeight(live, firsts, others):
+    
+    meanlive = live.totalwgt_lb.mean()
+    meanfirsts = firsts.totalwgt_lb.mean()
+    meanothers = others.totalwgt_lb.mean()
+    
+    print('Mean')
+    print('Firsts', meanfirsts)
+    print('Others', meanothers)
+    
+    print('Difference in lbs', meanfirsts-meanothers)
+    print('Difference in %', (meanfirsts-meanothers) / meanlive * 100)
 
+    varfirsts = firsts.totalwgt_lb.var()
+    varothers = others.totalwgt_lb.var()
+    
+    print('Variance')
+    print('Firsts', varfirsts)
+    print('Others', varothers)
+    
+    d = thinkstats2.CohenEffectSize(firsts.totalwgt_lb, others.totalwgt_lb)
+    print('Cohen effect', d)
+    
 def main(script):
     """Tests the functions in this module.
 
     script: string script name
     """
+    
     live, firsts, others = first.MakeFrames()
     hist = thinkstats2.Hist(live.prglngth)
 
@@ -53,7 +79,9 @@ def main(script):
 
     for value, freq in modes[:5]:
         print(value, freq)
-
+       
+    CompareWeight(live, firsts, others)
+    
     print('%s: All tests passed.' % script)
 
 
